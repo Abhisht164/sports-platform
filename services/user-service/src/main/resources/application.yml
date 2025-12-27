@@ -1,0 +1,24 @@
+spring:
+  application:
+    name:
+      user-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sports_user_db
+    username: sports_user
+    password: sports_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: 0
+
+  jpa:
+    open-in-view: false   # harmless for now, we won’t use JPA
+
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8080
+
+    
+

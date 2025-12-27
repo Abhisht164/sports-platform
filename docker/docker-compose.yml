@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: sports-postgres
+    environment:
+      POSTGRES_DB: sports_user_db
+      POSTGRES_USER: sports_user
+      POSTGRES_PASSWORD: sports_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - sports_pg_data:/var/lib/postgresql/data
+
+volumes:
+  sports_pg_data:
