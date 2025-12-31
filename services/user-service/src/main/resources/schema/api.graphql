@@ -1,0 +1,34 @@
+type Query {
+
+  users(
+    filter: UserFilter
+    limit: Int = 20,
+    offset: Int = 0
+  ): [User!]!
+}
+
+type User {
+  id: ID!          # opaque, stable
+  username: String
+  email: String
+  status: String
+  createdAt: String
+}
+
+input UserFilter {
+  email: String
+  username: String
+  status: String
+}
+
+input CreateUserInput {
+  username: String!
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+}
+
+

@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.9'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'nu.studer.jooq' version '8.2'
+	id 'com.netflix.dgs.codegen' version '6.1.2'
 }
 
 group = 'com.sportsplatform'
@@ -24,29 +25,45 @@ configurations {
 repositories {
 	mavenCentral()
 }
-dependencyManagement {
-	imports {
-		mavenBom "org.jooq:jooq-bom:3.19.10"
+ext {
+	set('netflixDgsVersion', "10.4.0")
+}
+sourceSets {
+	main {
+		java {
+			srcDirs += "build/generated/sources/dgs-codegen"
+		}
 	}
 }
 
+
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'org.springframework.boot:spring-boot-starter-jooq'
 	jooqGenerator 'org.postgresql:postgresql:42.7.4'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter'
+	implementation 'org.springframework.security:spring-security-crypto'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql:42.7.4'
 	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.graphql:spring-graphql-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter-test'
+//	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+generateJava {
+	schemaPaths = ["${projectDir}/src/main/resources/schema"]
+	packageName = "com.sportsplatform.user_service.graphql.generated"
+	generateClient = false
+}
+
 jooq {
 	configurations {
 		main {
@@ -74,7 +91,13 @@ jooq {
 	}
 }
 
+dependencyManagement {
+	imports {
+		mavenBom "com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${netflixDgsVersion}"
+	}
+}
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+

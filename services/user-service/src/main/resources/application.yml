@@ -20,5 +20,13 @@ spring:
 server:
   port: 8080
 
-    
+dgs:
+  graphql:
+    graphiql:
+      enabled: true
 
+
+logging:
+  level:
+    com.netflix.graphql.dgs: DEBUG
+    org.springframework.graphql: DEBUG
