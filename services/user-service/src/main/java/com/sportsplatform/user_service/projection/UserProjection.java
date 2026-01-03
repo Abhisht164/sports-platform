@@ -1,6 +1,5 @@
 package com.sportsplatform.user_service.projection;
 
-import java.util.UUID;
 
 public record UserProjection(
         String userCode,

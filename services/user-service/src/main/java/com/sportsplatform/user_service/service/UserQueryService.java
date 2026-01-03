@@ -1,15 +1,22 @@
 package com.sportsplatform.user_service.service;
 
+import com.sportsplatform.user_service.graphql.generated.types.CurrentUser;
 import com.sportsplatform.user_service.projection.UserProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.jooq.DSLContext;
+import org.jooq.Record3;
+import org.jooq.Result;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
+import static com.sportsplatform.user.jooq.tables.Roles.ROLES;
+import static com.sportsplatform.user.jooq.tables.UserRoles.USER_ROLES;
 import static com.sportsplatform.user.jooq.tables.Users.USERS;
 
 @Service
@@ -57,9 +64,34 @@ public class UserQueryService {
                 ));
     }
 
-    /**
-     * Simple projection used by upper layers.
-     */
+    @Transactional(readOnly = true)
+    public CurrentUser fetchCurrentUser() {
+
+        String userCode=currentUserId();
+        Result<Record3<UUID, String, String>> result =
+                dsl.select(
+                                USERS.ID,
+                                USERS.USERNAME,
+                                ROLES.NAME
+                        )
+                        .from(USERS)
+                        .join(USER_ROLES).on(USER_ROLES.USER_ID.eq(USERS.ID))
+                        .join(ROLES).on(ROLES.ID.eq(USER_ROLES.ROLE_ID))
+                        .where(USERS.USER_CODE.eq(userCode))
+                        .fetch();
+
+        if (result.isEmpty()) {
+            throw new IllegalStateException("User has no roles assigned");
+        }
+
+        String username = result.get(0).get(USERS.USERNAME);
+
+        List<String> roles = result.stream()
+                .map(r -> r.get(ROLES.NAME))
+                .toList();
+
+        return new CurrentUser(userCode.toString(), username, roles);
+    }
 
     private int sanitizeLimit(Integer limit) {
         if (limit == null) return DEFAULT_LIMIT;
@@ -70,5 +102,12 @@ public class UserQueryService {
         if (offset == null) return 0;
         return Math.max(offset, 0);
     }
+
+    public String currentUserId() {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        return UUID.fromString(auth.getName());
+        return "USR000001";
+    }
+
 
 }

@@ -1,11 +1,18 @@
 type Query {
-
+  # ADMIN ONLY
   users(
     filter: UserFilter
-    limit: Int = 20,
+    limit: Int = 20
     offset: Int = 0
   ): [User!]!
+
+  # PLAYER / COACH
+#  visibleUsers(
+#    limit: Int = 20
+#    offset: Int = 0
+#  ): [User!]!
 }
+
 
 type User {
   id: ID!          # opaque, stable
@@ -14,6 +21,13 @@ type User {
   status: String
   createdAt: String
 }
+
+type CurrentUser {
+  id: ID!
+  username: String!
+  roles: [String!]!
+}
+
 
 input UserFilter {
   email: String

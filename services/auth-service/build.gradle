@@ -8,7 +8,7 @@ plugins {
 
 group = 'com.sportsplatform'
 version = '0.0.1-SNAPSHOT'
-description = 'User Service'
+description = 'Auth-Service'
 
 java {
 	toolchain {
@@ -16,18 +16,14 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
+
 ext {
 	set('netflixDgsVersion', "10.4.0")
 }
+
 sourceSets {
 	main {
 		java {
@@ -36,31 +32,32 @@ sourceSets {
 	}
 }
 
-
-
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.security:spring-security-crypto'
+
+	// GraphQL DGS
+	implementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-jooq'
 	jooqGenerator 'org.postgresql:postgresql:42.7.4'
-//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter'
-	implementation 'org.springframework.security:spring-security-crypto'
-	compileOnly 'org.projectlombok:lombok'
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	runtimeOnly 'org.postgresql:postgresql:42.7.4'
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter-test'
-//	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
 generateJava {
 	schemaPaths = ["${projectDir}/src/main/resources/schema"]
-	packageName = "com.sportsplatform.user_service.graphql.generated"
+	packageName = "com.sportsplatform.auth_service.graphql.generated"
 	generateClient = false
 }
 

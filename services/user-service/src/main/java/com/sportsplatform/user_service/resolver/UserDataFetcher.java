@@ -1,9 +1,7 @@
 package com.sportsplatform.user_service.resolver;
-import com.netflix.graphql.dgs.DgsComponent;
-import com.netflix.graphql.dgs.DgsMutation;
-import com.netflix.graphql.dgs.DgsQuery;
-import com.netflix.graphql.dgs.InputArgument;
+import com.netflix.graphql.dgs.*;
 import com.sportsplatform.user_service.dto.CreateUserRequest;
+import com.sportsplatform.user_service.graphql.generated.types.CurrentUser;
 import com.sportsplatform.user_service.graphql.generated.types.User;
 import com.sportsplatform.user_service.mapper.UserMapper;
 import com.sportsplatform.user_service.service.UserCommandService;
@@ -40,12 +38,30 @@ public class UserDataFetcher {
                 .toList();
     }
 
+//    @DgsQuery
+//    public CurrentUser me() {
+//        return userQueryService.fetchCurrentUser();
+//    }
+
+//        @DgsQuery
+//        public List<User> visibleUsers(
+//                @InputArgument Integer limit,
+//                @InputArgument Integer offset,
+//                DgsDataFetchingEnvironment dfe
+//        ) {
+//            CallerContext caller = CallerContext.from(dfe);
+//            return userVisibilityService.findVisibleUsers(caller, limit, offset);
+//        }
+
+
     @DgsMutation
-    public User createUser(@Valid @InputArgument("input") CreateUserRequest input) {
+    public User createUser(@Valid @InputArgument("input") CreateUserRequest userRequest) {
 
         log.debug("Creating User.... ")  ;
-        return userMapper.toUser(userCommandService.createUser(input.getUsername(), input.getEmail(), input.getPassword()));
+        return userMapper.toUser(userCommandService.createUser(userRequest));
     }
+
+
 
 
 }
